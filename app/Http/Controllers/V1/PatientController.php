@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\V1;
 
 use App\Services\V1\PatientService;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 
@@ -22,8 +23,9 @@ class PatientController extends Controller
      */
     public function index()
     {
-        $data = $this->patients->getPatients();
-        return response()->json($data);
+        $parameter = \request()->input();
+        $patients = $this->patients->getPatients($parameter);
+        return response()->json($patients);
     }
 
     /**
@@ -44,7 +46,13 @@ class PatientController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        try{
+            $patient = $this->patients->createPatient($request);
+            return response()->json($patient, 201);
+        }
+        catch (\Exception $e){
+            return response()->json(['message'=>$e->getMessage()]);
+        }
     }
 
     /**
@@ -58,16 +66,6 @@ class PatientController extends Controller
         //
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-        //
-    }
 
     /**
      * Update the specified resource in storage.
@@ -78,7 +76,17 @@ class PatientController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        //return response()->json($request, 200);
+        try{
+            $patient = $this->patients->updatePatient($request, $id);
+            return response()->json($patient, 200);
+        }
+        catch (ModelNotFoundException $e){
+            throw $e;
+        }
+        catch (\Exception $e){
+            return response()->json(['message'=>$e->getMessage()]);
+        }
     }
 
     /**
@@ -89,6 +97,15 @@ class PatientController extends Controller
      */
     public function destroy($id)
     {
-        //
+        try{
+            $patientName = $this->patients->deletePatient($id);
+            return response()->json(['message'=>'Patient supprimer avec succée'], 204);
+        }
+        catch (ModelNotFoundException $e){
+            throw $e;
+        }
+        catch (\Exception $e){
+            return response()->json(['message'=>$e->getMessage()]);
+        }
     }
 }

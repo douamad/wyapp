@@ -17,7 +17,19 @@ class PatientDonneesAlerteService
     public function getDonneesAlerte(){
         return PatientDonneesAlerte::all();
     }
-    public function getPatientDonneesAlerte(Patient $patient){
+    public function getPatientDonneesAlerte($patient_id){
+        $patient = $patient = Patient::where('id',$patient_id)->firstOrFail();
         return $patient->donneesAlerte();
+    }
+    public function createDonneesAlerte($req){
+        $donneeAlerte = new PatientDonneesAlerte();
+        $patient = Patient::where('id',$req->id_patient)->firstOrFail();
+        $donneeAlerte->patient_id = $patient->id;
+        $donneeAlerte->nature = $req->nature;
+        $donneeAlerte->type_alerte = $req->type_alerte;
+        $donneeAlerte->description = $req->nature;
+
+        $donneeAlerte->save();
+        return $donneeAlerte;
     }
 }

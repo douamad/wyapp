@@ -2,15 +2,16 @@
 
 namespace App\Http\Controllers\V1;
 
+use App\Services\V1\PatientDonneesAlerteService;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 
 class PatientDonneesAlerteController extends Controller
 {
     protected $donneesAlerte;
-    public function __construct()
+    public function __construct(PatientDonneesAlerteService $service)
     {
-
+        $this->donneesAlerte = $service;
     }
 
     /**
@@ -20,7 +21,8 @@ class PatientDonneesAlerteController extends Controller
      */
     public function index()
     {
-        //
+        $donneesAlertes = $this->donneesAlerte->getDonneesAlerte();
+        return response()->json($donneesAlertes);
     }
 
     /**
@@ -41,7 +43,13 @@ class PatientDonneesAlerteController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        try{
+            $donneesAlerte = $this->donneesAlerte->createDonneesAlerte($request);
+            return response()->json($donneesAlerte, 201);
+        }
+        catch (\Exception $e){
+            return response()->json(['message'=>$e->getMessage()]);
+        }
     }
 
     /**

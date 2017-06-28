@@ -23,3 +23,4 @@ Route::group(['middleware' => 'auth:api'], function(){
     Route::post('/details', 'V1\UserController@details');
 });
 Route::resource('/v1/patients', 'V1\PatientController');
+Route::resource('/v1/donneesalerte', 'V1\PatientDonneesAlerteController');
